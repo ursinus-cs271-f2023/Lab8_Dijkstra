@@ -56,6 +56,8 @@ class Graph:
         dictionary: label->distance
             Distance of all vertices from the start
         """
+        for v in self.vertices.values():
+            v.state = UNTOUCHED
         frontier = MinPQ()
         frontier.push([0, start])
         distances = {} ## TODO: Fill this in
