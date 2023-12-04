@@ -6,8 +6,7 @@ class MinPQ(object):
         # Each arraylist entry is stored as the list [priority, label]
         # The smallest priority is at index 0
         self._arr = [] 
-        ## TODO: Add data structure to remember index positions
-        ## of different labels into _arr
+        self.label2idx = {}
 
     def __len__(self):
         return len(self._arr)
@@ -88,7 +87,8 @@ class MinPQ(object):
         Swap the information stored in each node
         """
         self._arr[i], self._arr[j] = self._arr[j], self._arr[i]
-        ## TODO: Update positions of labels that have swapped
+        self.label2idx[self._arr[i][1]] = i
+        self.label2idx[self._arr[j][1]] = j
 
     def _upheap(self, i):
         """
@@ -137,8 +137,7 @@ class MinPQ(object):
         -------
         float: The priority
         """
-        pass
-        ## TODO: Fill this in
+        return self._arr[self.label2idx[label]][0]
 
     def update_priority(self, label, priority):
         """
@@ -151,8 +150,10 @@ class MinPQ(object):
         priority: float
             New priority of object
         """
-        pass
-        ## TODO: Fill this in
+        idx = self.label2idx[label]
+        self._arr[idx][0] = priority
+        self._upheap(idx)
+        self._downheap(self.label2idx[label])
 
     def push(self, entry):
         """
@@ -163,8 +164,8 @@ class MinPQ(object):
         entry: [float, hashable]
             List of [priority, label]
         """
-        ## TODO: Store index of new item
         self._arr.append(entry)
+        self.label2idx[entry[1]] = len(self._arr)-1
         self._upheap(len(self._arr)-1)
     
     def pop(self):
@@ -181,6 +182,7 @@ class MinPQ(object):
         self._swap(0, len(self._arr)-1)
         self._arr.pop()
         self._downheap(0)
+        del self.label2idx[ret[1]]
         return ret
 
 if __name__ == '__main__':

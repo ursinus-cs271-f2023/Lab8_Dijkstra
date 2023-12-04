@@ -9,6 +9,7 @@ class Vertex:
         self.label = label
         self.neighbs = set([]) # Stores (weight, vertex label) tuples
         self.state = UNTOUCHED
+        self.prev = None
     
     def __repr__(self):
         return "{}".format(self.label)
@@ -60,8 +61,10 @@ class Graph:
         distances = {} ## TODO: Fill this in
         # Each vertex passes through the frontier exactly once
         while len(frontier) > 0: # O(V) iterations
-            pass
             ## TODO: Take off the node at the front and record its distance
+            [d, vertex] = frontier.pop()
+            distances[vertex] = d
+            self.vertices[vertex].state = VISITED
 
             # Look at each neighbor of v.  Add its weight to the distance
             # to get d'
@@ -70,23 +73,22 @@ class Graph:
             # b) If it's already on the queue and d' is less than its priority, 
             # update the priority
             # Otherwise, if it's already been visited, do nothing
+            for (w, n) in self.vertices[vertex].neighbs:
+                if self.vertices[n].state == UNTOUCHED:
+                    frontier.push([d+w, n])
+                    self.vertices[n].state = FRONTIER
+                    self.vertices[n].prev = vertex
+                elif self.vertices[n].state == FRONTIER:
+                    if frontier.get_priority(n) > d+w:
+                        frontier.update_priority(n, d+w)
+                        self.vertices[n].prev = vertex
+                    
+
         
         return distances
     
     def backtrace(self, x):
-        """
-        After running Dijkstra's, backtrace from a particular vertex
-        x to where Dijsktra's was initiated
-
-        Parameters
-        ----------
-        x: hashable
-            Vertex that we ended up at
-        
-        Returns
-        -------
-        list of hashable: path from start vertex to x
-        """
         path = [x]
-        ## TODO: Fill this in
+        while self.vertices[path[-1]].prev is not None:
+            path.append(self.vertices[path[-1]].prev)
         return path
